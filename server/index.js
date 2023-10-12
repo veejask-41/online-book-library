@@ -28,6 +28,18 @@ app.get("/books", (req, res) => {
   });
 });
 
+app.get("/books/:id", (req, res) => {
+  const bookId = req.params.id;
+  const query = `select * from books where id = ${bookId}`;
+  db.query(query, (err, data) => {
+    if (err) {
+      res.json({ error: err });
+    } else {
+      res.json(data);
+    }
+  });
+});
+
 app.post("/books", (req, res) => {
   const query =
     "insert into books (`title`,`description`,`cover`) values (?,?,?)";
@@ -39,6 +51,35 @@ app.post("/books", (req, res) => {
       res.json("book successfully added");
     }
   });
+});
+
+app.delete("/books/:id", (req, res) => {
+  const bookId = req.params.id;
+  const query = "delete from books where id = ?";
+  db.query(query, [bookId], (err, data) => {
+    if (err) {
+      res.json({ error: err });
+    } else {
+      res.json("book deleted successfully");
+    }
+  });
+});
+
+app.put("/books/:id", (req, res) => {
+  const bookId = req.params.id;
+  const query =
+    "update books set `title` = ?, `description` = ?, `cover` = ? where id = ?";
+  db.query(
+    query,
+    [req.body.title, req.body.description, req.body.cover, bookId],
+    (err, data) => {
+      if (err) {
+        res.json({ error: err });
+      } else {
+        res.json("book updated successfully");
+      }
+    }
+  );
 });
 
 app.listen(1234, () => {
